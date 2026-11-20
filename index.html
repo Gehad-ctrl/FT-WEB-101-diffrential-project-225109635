@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><title><NEWTON-Raphson></NEWTON-Raphson></title>
+<style>
+body{font-family:Tahoma;background:#FFF0F5;color:#5A3A4A;padding:20px;text-align:center}
+.box{background:#fff;border:3px solid #FFC0D9;border-radius:24px;padding:20px;max-width:600px;margin:auto;box-shadow:0 10px 25px #FFD6E8}
+input{width:90%;padding:12px;border-radius:14px;border:2px solid #FFD6E8;margin:8px 0;font-size:16px;text-align:center}
+button{padding:13px 25px;border:none;border-radius:16px;background:#FF8FAB;color:#fff;font-weight:900;font-size:16px;cursor:pointer}
+table{width:100%;margin-top:14px;border-collapse:collapse;font-size:13px}
+td,th{border-bottom:1px solid #FFE4EC;padding:8px}
+canvas{width:100%;background:#FFF9FB;border:2px dashed #FFC0D9;border-radius:16px;margin-top:12px}
+</style></head>
+<body>
+<div class="box">
+<h1>🌸roots 💗</h1>
+<p>✨</p>
+<p><b>function:</b></p>
+<input id="func" value="x^3 - 8*x - 5">
+<p><b>Xo:</b></p>
+<input id="x0" type="number" value="0">
+<br><button onclick="solve()">find root💗</button>
+<p id="out" style="font-weight:900;margin-top:12px;color:#FF5C8A"></p>
+<canvas id="cv" width="500" height="280"></canvas>
+<div id="tbl"></div>
+</div>
+<script>
+function makeF(s){s=s.toLowerCase().split('^').join('**').split('exp').join('Math.exp').split('sin').join('Math.sin').split('cos').join('Math.cos').split('sqrt').join('Math.sqrt');return new Function('x','return '+s);}
+function solve(){
+try{
+var f=makeF(document.getElementById('func').value);
+var x=parseFloat(document.getElementById('x0').value);
+var h=0.000001;
+var rows='';
+for(var i=0;i<10;i++){
+var fx=f(x);var dfx=(f(x+h)-f(x-h))/(2*h);
+var xn=x-fx/dfx;var err=Math.abs(xn-x);
+rows+='<tr><td>'+(i+1)+'</td><td>'+x.toFixed(4)+'</td><td>'+fx.toFixed(4)+'</td><td>'+xn.toFixed(4)+'</td></tr>';
+x=xn;if(err<0.000001)break;
+}
+document.getElementById('out').innerText='root= '+x.toFixed(6)+' 💗 in'+(i+1)+' iterations';
+document.getElementById('tbl').innerHTML='<table><tr><th>iteration</th><th>xn</th><th>f(xn)</th><th>xn+1</th></tr>'+rows+'</table>';
+draw(f,x);
+}catch(e){document.getElementById('out').innerText='    Write true function💗';}
+}
+function draw(f,root){
+var c=document.getElementById('cv'),ctx=c.getContext('2d'),W=c.width,H=c.height;
+ctx.clearRect(0,0,W,H);ctx.fillStyle='#FFF9FB';ctx.fillRect(0,0,W,H);
+var xmin=root-3,xmax=root+3,vals=[];
+for(var i=0;i<=W;i++){var xv=xmin+(xmax-xmin)*i/W;vals.push(f(xv));}
+var ymin=Math.min.apply(null,vals.concat([0]))-1,ymax=Math.max.apply(null,vals.concat([0]))+1;
+function X(v){return (v-xmin)/(xmax-xmin)*W;}function Y(v){return H-(v-ymin)/(ymax-ymin)*H;}
+ctx.strokeStyle='#C08497';ctx.beginPath();ctx.moveTo(0,Y(0));ctx.lineTo(W,Y(0));ctx.stroke();
+ctx.beginPath();ctx.moveTo(X(0),0);ctx.lineTo(X(0),H);ctx.stroke();
+ctx.strokeStyle='#A78BFA';ctx.lineWidth=3;ctx.beginPath();
+for(var j=0;j<vals.length;j++){if(j==0)ctx.moveTo(j,Y(vals[j]));else ctx.lineTo(j,Y(vals[j]));}ctx.stroke();
+ctx.fillStyle='#FF8FAB';ctx.beginPath();ctx.arc(X(root),Y(f(root)),8,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#5A3A4A';ctx.font='bold 13px Tahoma';ctx.fillText('root= '+root.toFixed(3),X(root)-40,Y(0)-10);
+}
+solve();
+</script>
+</body>
+</html>
